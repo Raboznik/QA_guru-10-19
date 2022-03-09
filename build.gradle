@@ -1,0 +1,58 @@
+plugins {
+    id 'java-library'
+    id "io.qameta.allure" version "2.9.6"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def allureVersion = "2.17.2",
+    junitVersion = "5.8.2",
+    restAssuredVersion = "4.5.1",
+    assertJVersion = "3.22.0"
+
+allure {
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
+    report {
+        version.set(allureVersion)
+    }
+}
+
+dependencies {
+    testImplementation(
+            "io.rest-assured:rest-assured:$restAssuredVersion",
+             "io.rest-assured:json-schema-validator:$restAssuredVersion",
+             "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "com.codeborne:selenide:6.2.1",
+            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
+            "org.assertj:assertj-core:$assertJVersion")
+
+    testRuntimeOnly(
+            "org.slf4j:slf4j-simple:1.7.29",
+            "org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+
+    testLogging {
+        lifecycle {
+//            events "started", "failed"
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
