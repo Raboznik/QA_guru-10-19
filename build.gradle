@@ -29,11 +29,13 @@ allure {
 dependencies {
     testImplementation(
             "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.rest-assured:json-schema-validator:$restAssuredVersion",
              "io.rest-assured:json-schema-validator:$restAssuredVersion",
              "io.qameta.allure:allure-rest-assured:$allureVersion",
             "com.codeborne:selenide:6.2.1",
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
-            "org.assertj:assertj-core:$assertJVersion")
+            "org.assertj:assertj-core:$assertJVersion",
+            "org.aeonbits.owner:owner:1.0.12")
 
     testRuntimeOnly(
             "org.slf4j:slf4j-simple:1.7.29",
