@@ -1,6 +1,8 @@
 package ru.yandex.mkruchkov.rest_assured;
 
+import helpers.Credentials;
 import io.restassured.RestAssured;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,10 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 
 public class BookStoreTest {
-    String data = "{ \"userName\": \"Max\", \"password\": \"1Q2w3e4r!\" }";
+
+    Credentials config = ConfigFactory.create(Credentials.class);
+    String data = String.format("{ \"userName\": \"%s\", \"password\": \"%s\" }", config.userName(), config.password());
+
 
     @BeforeAll
     static void setUp() {
@@ -23,28 +28,12 @@ public class BookStoreTest {
     void getBooksTest() {
 
         given()
-                .log().uri()
+                .filter(withCustomTemplates())
                 .get("/BookStore/v1/Books")
                 .then()
                 .body(matchesJsonSchemaInClasspath("JSONschema/getBooks.json"))
                 .statusCode(200)
-                .log().body()
                 .body("books.title[0]", is("Git Pocket Guide"));
-    }
-
-    @Test
-    void generateTokenTest() {
-
-        given()
-                .contentType(JSON)
-                .body(data)
-                .when()
-                .post("/Account/v1/GenerateToken")
-                .then()
-                .body(matchesJsonSchemaInClasspath("JSONschema/generateTokenWithListener.json"))
-                .log().body()
-                .statusCode(200)
-                .body("token.size()", greaterThan(100));
     }
 
     @Test
@@ -58,7 +47,6 @@ public class BookStoreTest {
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .body(matchesJsonSchemaInClasspath("JSONschema/generateTokenWithListener.json"))
-                .log().body()
                 .statusCode(200)
                 .body("token.size()", greaterThan(100));
     }
